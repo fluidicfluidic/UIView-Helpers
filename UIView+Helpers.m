@@ -191,7 +191,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 
 - (void)rightAlignForView:(UIView *)view
 {
-    [self rightAlignForSuperViewOffset:0];
+    [self rightAlignForView:view offset:0];
 }
 
 - (void)topAlignForView:(UIView *)view

@@ -576,9 +576,9 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
 {
     UIView *snapshot;
     
-    if ([self respondsToSelector:@selector(snapshotView)])
+    if ([self respondsToSelector:@selector(snapshotViewAfterScreenUpdates:)])
     {
-        snapshot = [self performSelector:@selector(snapshotView)];
+      snapshot = [self snapshotViewAfterScreenUpdates:YES];
     }
     
     else

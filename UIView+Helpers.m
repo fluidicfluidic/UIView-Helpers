@@ -9,7 +9,7 @@
 
 #define nameOfVar(x) [NSString stringWithFormat:@"%s", #x]
 
-static inline CGRect CGRectRound(CGRect rect) {return CGRectMake((NSInteger)rect.origin.x, (NSInteger)rect.origin.y, (NSInteger)rect.size.width, (NSInteger)rect.size.height); }
+static inline CGRect CGRectRound(CGRect rect) {return rect;}
 static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 
 @implementation UIView (Helpers)
@@ -30,7 +30,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 + (CGRect)alignRect:(CGRect)startingRect toRect:(CGRect)referenceRect withAlignment:(UIViewAlignment)alignment insets:(UIEdgeInsets)insets andReferenceIsSuperView:(BOOL)isReferenceSuperView
 {
     CGRect newRect = startingRect;
-    
+
     // X alignments
     if (alignment & UIViewAlignmentLeft)
     {
@@ -74,7 +74,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
             (((CGRectGetWidth(referenceRect) - CGRectGetWidth(startingRect))) / 2.0f);
         }
     }
-    
+
     // Y alignments
     if (alignment & UIViewAlignmentTop)
     {
@@ -118,7 +118,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
             ((CGRectGetHeight(referenceRect) - CGRectGetHeight(startingRect)) / 2.0f) + insets.top - insets.bottom;
         }
     }
-    
+
     return CGRectIntegral(newRect);
 }
 
@@ -369,7 +369,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 {
     CGRect frame = [self frame];
     CGRect viewFrame = [view frame];
-    
+
     [self setFrame:CGRectRound(CGRectMake(CGRectGetMinX(frame), CGRectGetMaxY(viewFrame) + offset, CGRectGetWidth(frame), CGRectGetHeight(frame)))];
 }
 
@@ -377,7 +377,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 {
     CGRect frame = [self frame];
     CGRect viewFrame = [view frame];
-    
+
     [self setFrame:CGRectRound(CGRectMake(CGRectGetMinX(frame), CGRectGetMinY(viewFrame) - CGRectGetHeight([self frame]) - offset, CGRectGetWidth(frame), CGRectGetHeight(frame)))];
 }
 
@@ -385,7 +385,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 {
     CGRect frame = [self frame];
     CGRect viewFrame = [view frame];
-    
+
     [self setFrame:CGRectRound(CGRectMake(CGRectGetMaxX(viewFrame) + offset, CGRectGetMinY(frame), CGRectGetWidth(frame), CGRectGetHeight(frame)))];
 }
 
@@ -393,7 +393,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 {
     CGRect frame = [self frame];
     CGRect viewFrame = [view frame];
-    
+
     [self setFrame:CGRectRound(CGRectMake(CGRectGetMinX(viewFrame) - CGRectGetWidth(frame) - offset, CGRectGetMinY(frame), CGRectGetWidth(frame), CGRectGetHeight(frame)))];
 }
 
@@ -405,12 +405,12 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
     if ([self isKindOfClass:[UIButton class]])
     {
         UIImage *image = [(UIButton *)self imageForState:UIControlStateNormal];
-        
+
         if (!image)
         {
             image = [(UIButton *)self backgroundImageForState:UIControlStateNormal];
         }
-        
+
         if (image)
         {
             [self setFrame:CGRectMake(CGRectGetMinX([self frame]), CGRectGetMinY([self frame]), [image size].width, [image size].height)];
@@ -440,7 +440,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 - (void)setVerticalFadeMaskWithTopOffset:(CGFloat)topOffset bottomOffset:(CGFloat)bottomOffset
 {
     CAGradientLayer *maskLayer = [CAGradientLayer layer];
-    
+
     UIColor *outerColor = [UIColor colorWithWhite:0.0f alpha:0.0f];
     UIColor *innerColor = [UIColor colorWithWhite:0.0f alpha:1.0f];
     [maskLayer setColors:@[
@@ -465,7 +465,7 @@ static NSString * const UIVIEW_HELPERS_FRAME_KVO_KEY = @"frame";
 - (void)setHorizontalFadeMaskWithLeftOffset:(CGFloat)leftOffset rightOffset:(CGFloat)rightOffset
 {
     CAGradientLayer *maskLayer = [CAGradientLayer layer];
-    
+
     UIColor *outerColor = [UIColor colorWithWhite:0.0f alpha:0.0f];
     UIColor *innerColor = [UIColor colorWithWhite:0.0f alpha:1.0f];
     [maskLayer setColors:@[
@@ -491,9 +491,9 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
 {
     CGContextRef context;
     CGColorSpaceRef colorSpace;
-    
+
     colorSpace = CGColorSpaceCreateDeviceRGB();
-    
+
     float scaleFactor = [[UIScreen mainScreen] scale];
     context = CGBitmapContextCreate( NULL,
                                     rect.size.width * scaleFactor,
@@ -502,25 +502,25 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
                                     rect.size.width * scaleFactor * 4,
                                     colorSpace,
                                     kCGImageAlphaPremultipliedLast );
-    
+
     CGColorSpaceRelease(colorSpace);
-    
+
     if (context == NULL)
     {
         return NULL;
     }
-    
+
     CGContextScaleCTM(context, scaleFactor, scaleFactor);
-    
+
     CGFloat minx = CGRectGetMinX( rect ), midx = CGRectGetMidX( rect ), maxx = CGRectGetMaxX( rect );
     CGFloat miny = CGRectGetMinY( rect ), midy = CGRectGetMidY( rect ), maxy = CGRectGetMaxY( rect );
-    
+
     CGContextBeginPath( context );
     CGContextSetGrayFillColor( context, 1.0, 0.0 );
     CGContextAddRect( context, rect );
     CGContextClosePath( context );
     CGContextDrawPath( context, kCGPathFill );
-    
+
     CGContextSetGrayFillColor( context, 1.0, 1.0 );
     CGContextBeginPath( context );
     CGContextMoveToPoint( context, minx, midy );
@@ -530,14 +530,14 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
     CGContextAddArcToPoint( context, minx, maxy, minx, midy, radius_tl );
     CGContextClosePath( context );
     CGContextDrawPath( context, kCGPathFill );
-    
+
     CGImageRef bitmapContext = CGBitmapContextCreateImage( context );
     CGContextRelease( context );
-    
+
     UIImage *mask = [UIImage imageWithCGImage:bitmapContext];
-    
+
     CGImageRelease(bitmapContext);
-    
+
     return mask;
 }
 
@@ -546,48 +546,48 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
 - (UIImageView *)createSnapshot
 {
     UIGraphicsBeginImageContextWithOptions([self bounds].size, YES, 0);
-    
+
     CGContextTranslateCTM(UIGraphicsGetCurrentContext(), -[self bounds].origin.x, -[self bounds].origin.y);
-    
+
     [[self layer] renderInContext:UIGraphicsGetCurrentContext()];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
+
     UIImageView *snapshot = [[UIImageView alloc] initWithImage:image];
     [snapshot setFrame:[self frame]];
-    
+
     return snapshot;
 }
 
 - (UIImage *)snapshotImage
 {
     UIGraphicsBeginImageContextWithOptions([self bounds].size, YES, 0);
-    
+
     CGContextTranslateCTM(UIGraphicsGetCurrentContext(), -[self bounds].origin.x, -[self bounds].origin.y);
-    
+
     [[self layer] renderInContext:UIGraphicsGetCurrentContext()];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
+
     return image;
 }
 
 - (UIView *)snapshotImageView
 {
     UIView *snapshot;
-    
+
     if ([self respondsToSelector:@selector(snapshotViewAfterScreenUpdates:)])
     {
       snapshot = [self snapshotViewAfterScreenUpdates:YES];
     }
-    
+
     else
     {
         UIImage *image = [self snapshotImage];
         snapshot = [[UIImageView alloc] initWithImage:image];
         [snapshot setFrame:[self bounds]];
     }
-    
+
     return snapshot;
 }
 
@@ -608,33 +608,33 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
 {
     [self performInRelease:showInRelease
                      block:^{
-                         
+
                          [[self layer] setBorderColor:[[UIColor redColor] CGColor]];
                          [[self layer] setBorderWidth:1.0f];
-                         
+
                      }];
-    
+
 }
 
 - (void)logFrameChanges
 {
     [self performInDebug:^{
-        
+
         [self frameDidChange];
         [self addObserver:self forKeyPath:UIVIEW_HELPERS_FRAME_KVO_KEY options:0 context:0];
-        
+
     }];
 }
 
 - (void)frameDidChange
 {
     [self performInDebug:^{
-        
+
         NSLog(@"%@ <%@: %p; frame = %@>", nameOfVar(self),
               NSStringFromClass([self class]),
               self,
               NSStringFromCGRect([self frame]));
-        
+
     }];
 }
 
@@ -654,7 +654,7 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
 {
     __block CGFloat height = 0;
     __block int numVisibleViews = 0;
-    
+
     if (type == VerticalLayoutTypeCenter || (shrinkSpacingToFit && spacing > 0))
     {
         [views enumerateObjectsUsingBlock:^(UIView* obj, NSUInteger idx, BOOL *stop) {
@@ -663,12 +663,12 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
                 numVisibleViews += 1;
             }
         }];
-        
+
         if (numVisibleViews == 0)
         {
             return 0;
         }
-        
+
         if (shrinkSpacingToFit && height > [view frameSizeHeight])
         {
             CGFloat d = (height - [view frameSizeHeight]) / (CGFloat)(numVisibleViews-1);
@@ -677,7 +677,7 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
             height -= (d * (CGFloat)(numVisibleViews-1));
         }
     }
-    
+
     __block CGFloat y = 0;
     if (type == VerticalLayoutTypeCenter)
     {
@@ -686,11 +686,11 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
     {
         y = [view frameSizeHeight];
     }
-    
+
     CGFloat startY = y;
     [views enumerateObjectsWithOptions:(type == VerticalLayoutTypeBottom ? NSEnumerationReverse : 0)
                             usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                                
+
                                 if (type == VerticalLayoutTypeBottom)
                                 {
                                     CGFloat height = [obj frameSizeHeight];
@@ -709,7 +709,7 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
                                     }
                                 }
                             }];
-    
+
     CGFloat ret = ABS(y - startY)-spacing;
     return ret;
 }
@@ -723,7 +723,7 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
     __block CGFloat height = 0;
     __block int numVisibleViews = 0;
     CGFloat spacingModifier = 0;
-    
+
     if (type == VerticalLayoutTypeCenter || (shrinkSpacingToFit && spacing > 0))
     {
         __block CGFloat totalSpacing = 0;
@@ -736,19 +736,19 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
                 numVisibleViews += 1;
             }
         }];
-        
+
         if (numVisibleViews == 0)
         {
             return 0;
         }
-        
+
         if (shrinkSpacingToFit && height > [view frameSizeHeight])
         {
             CGFloat d = MIN(totalSpacing, (height - [view frameSizeHeight]));
             spacingModifier = (d / totalSpacing);
         }
     }
-    
+
     __block CGFloat y = 0;
     if (type == VerticalLayoutTypeCenter)
     {
@@ -758,14 +758,14 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
     {
         y = [view frameSizeHeight];
     }
-    
+
     CGFloat startY = y;
     [views enumerateObjectsWithOptions:(type == VerticalLayoutTypeBottom ? NSEnumerationReverse : 0)
                             usingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                                
+
                                 CGFloat space = ((idx < spacing.count) ? [spacing[idx] floatValue] : 0);
                                 space -= (space * spacingModifier);
-                                
+
                                 if (type == VerticalLayoutTypeBottom)
                                 {
                                     CGFloat height = [obj frameSizeHeight];
@@ -784,7 +784,7 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
                                     }
                                 }
                             }];
-    
+
     CGFloat ret = ABS(y - startY);
     return ret;
 }
@@ -800,7 +800,7 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
 - (UIView *)firstResponderInSubviews
 {
     UIView *responder;
-    
+
     for (UIView *subview in [self subviews])
     {
         if ([subview isFirstResponder])
@@ -811,20 +811,20 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
         {
             responder = [subview firstResponderInSubviews];
         }
-        
+
         if (responder)
         {
             break;
         }
     }
-    
+
     return responder;
 }
 
 - (NSArray *)subviewsOfClass:(Class)aClass recursive:(BOOL)recursive
 {
     NSMutableArray *subviews = [@[] mutableCopy];
-    
+
     for (UIView *subview in [self subviews])
     {
         if ([subview isKindOfClass:aClass])
@@ -836,7 +836,7 @@ static inline UIImage* createRoundedCornerMask(CGRect rect, CGFloat radius_tl, C
             [subviews addObjectsFromArray:[subview subviewsOfClass:aClass recursive:YES]];
         }
     }
-    
+
     return subviews;
 }
 
